@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class HelloApplication extends Application {
 
@@ -24,5 +25,24 @@ public class HelloApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+        CustomNode<String> a = new CustomNode<>("Oberlaa");
+        CustomNode<String> b = new CustomNode<>("Neulaa");
+        CustomNode<String> c = new CustomNode<>("Alaudagasse");
+        CustomNode<String> d = new CustomNode<>("Altes Landgut");
+        CustomNode<String> e = new CustomNode<>("Troststrasse");
+
+        a.connectToNodeUndirected(b);
+        a.connectToNodeUndirected(c);
+        b.connectToNodeUndirected(c);
+        c.connectToNodeUndirected(d);
+        d.connectToNodeUndirected(e);
+
+        CustomGraph.traverseGraphDepthFirst(b,null);
+
+
+
     }
-}
+
+
+
+    }

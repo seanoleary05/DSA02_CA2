@@ -6,32 +6,25 @@ import java.util.List;
 public class CustomNode<String> {
     public String name;
     public int nodeValue = Integer.MAX_VALUE;
-    public List<CustomLink> adjList = new ArrayList<>();
-    private int xCoordinate;
-    private int yCoordinate;
+    public List<CustomNode> adjList = new ArrayList<>();
 
-    public CustomNode(String name, int xCoordinate, int yCoordinate){
+
+    public CustomNode(String name){
         this.name = name;
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
+
 
     }
 
-    public int getxCoordinate() {
-        return xCoordinate;
+    public void connectToNodeDirected(CustomNode<String> destNode) {
+        adjList.add(destNode);
+    }
+    public void connectToNodeUndirected(CustomNode<String> destNode) {
+        adjList.add(destNode);
+        destNode.adjList.add(this);
     }
 
-    public void setxCoordinate(int xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
 
-    public int getyCoordinate() {
-        return yCoordinate;
-    }
 
-    public void setyCoordinate(int yCoordinate) {
-        this.yCoordinate = yCoordinate;
-    }
 
     public String getName() {
         return name;
@@ -49,11 +42,11 @@ public class CustomNode<String> {
         this.nodeValue = nodeValue;
     }
 
-    public List<CustomLink> getAdjList() {
+    public List<CustomNode> getAdjList() {
         return adjList;
     }
 
-    public void setAdjList(List<CustomLink> adjList) {
+    public void setAdjList(List<CustomNode> adjList) {
         this.adjList = adjList;
     }
 }
