@@ -1,22 +1,25 @@
 package org.example.ca2_dsa2;
 
-public class CustomLink<T> {
-    public CustomNode<T> destNode;
-    public int cost;
+public class CustomLink {
+    private CustomNode from;
+    private CustomNode to;
+    private String line;
+    private String color;
 
-    public CustomLink(CustomNode<T> destNode, int cost) {
-        this.destNode = destNode;
-        this.cost = cost;
+    public CustomLink(CustomNode from, CustomNode to, String line, String color) {
+        this.from = from;
+        this.to = to;
+        this.line = line;
+        this.color = color;
     }
 
-    public CustomNode<T> getDestNode() {
-        return destNode;
-    }
+    public CustomNode getFrom() { return from; }
+    public CustomNode getTo() { return to; }
+    public String getLine() { return line; }
+    public String getColor() { return color; }
 
-    public void setDestNode(CustomNode<T> destNode) {
-        this.destNode = destNode;
-    }
-    public int getCost() {
-        return cost;
+    @Override
+    public String toString() {
+        return from + " -> " + to + " (" + line + ", " + color + ")";
     }
 }

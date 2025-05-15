@@ -7,10 +7,16 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
 <VBox alignment="CENTER" prefHeight="866.0" prefWidth="1229.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ca2_dsa2.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
+    <ComboBox fx:id="startComboBox" />
+    <ComboBox fx:id="endComboBox" />
+    <Button text="Find Path" onAction="#handleFindPath" />
+    <TextArea fx:id="resultTextArea" editable="false" />
    <TextArea id="csvTextArea" fx:id="csvTextArea" prefHeight="200.0" prefWidth="200.0" />
    <ListView fixedCellSize="0.0" prefHeight="200.0" prefWidth="200.0" />
 

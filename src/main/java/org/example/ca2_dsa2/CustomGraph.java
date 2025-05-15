@@ -1,48 +1,32 @@
 package org.example.ca2_dsa2;
 
-import javafx.fxml.Initializable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CustomGraph {
-    public static CustomGraph graph;
+    private Map<String, CustomNode> nodes = new HashMap<>();
+    private Map<CustomNode, List<CustomLink>> adjacencyList = new HashMap<>();
 
-    public static class CostedPath {
-        public int pathCost = 0;
-        public List<CustomNode<?>> pathList = new ArrayList<>();
-        public int index; //Just for displaying in listView, Ex. Route 1, Route 2 etc. for clarity
+    public void addEdge(String fromName, String toName, String line, String color) {
+        CustomNode from = nodes.computeIfAbsent(fromName, CustomNode::new);
+        CustomNode to = nodes.computeIfAbsent(toName, CustomNode::new);
 
-        @Override
-        public String toString() {
+        CustomLink link = new CustomLink(from, to, line, color);
+        adjacencyList.computeIfAbsent(from, k -> new ArrayList<>()).add(link);
 
-            StringBuilder pathString = new StringBuilder("[ ROUTE " + index + " ]  -   PATH COST : " + pathCost + "\n\n");
-            for (int i = 0; i < pathList.size(); i++) {
-                CustomNode<?> node = pathList.get(i);
-                pathString.append(node.getName());
-
-                if (i < pathList.size() - 1) {
-                    pathString.append("  ->  ");
-                }
-            }
-            return pathString + "\n\n";
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
+        // For undirected graphs, add reverse edge:
+        CustomLink reverseLink = new CustomLink(to, from, line, color);
+        adjacencyList.computeIfAbsent(to, k -> new ArrayList<>()).add(reverseLink);
     }
 
-    //Regular recursive depth-first graph traversal
-    public static void traverseGraphDepthFirst(CustomNode<?> from, List<CustomNode<?>> encountered ){
-        System.out.println(from.name);
-        if(encountered==null) encountered=new ArrayList<>(); //First node so create new (empty) encountered list
-        encountered.add(from);
-        for(CustomNode<?> adjNode : from.adjList)
-            if(!encountered.contains(adjNode)) traverseGraphDepthFirst(adjNode, encountered );
+    public Map<CustomNode, List<CustomLink>> getAdjacencyList() {
+        return adjacencyList;
     }
 
+    public Collection<CustomNode> getNodes() {
+        return nodes.values();
+    }
 
-
+    public CustomNode getNode(String name) {
+        return nodes.get(name);
+    }
 }
