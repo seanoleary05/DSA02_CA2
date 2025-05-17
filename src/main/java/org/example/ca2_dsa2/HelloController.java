@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HelloController {
     @FXML
@@ -61,6 +62,7 @@ public class HelloController {
                 String lineNum = parts[2].trim();
                 String color = parts[3].trim();
 
+
                 graph.addEdge(start, stop, lineNum, color);
             }
 
@@ -104,6 +106,23 @@ public class HelloController {
             resultTextArea.setText("No path found between " + start + " and " + end);
         }
     }
+    @FXML
+    private void handleDijkstraPath() {
+        String start = startComboBox.getValue();
+        String end = endComboBox.getValue();
+
+        if (start == null || end == null || start.equals(end)) {
+            resultTextArea.setText("Please select two different stations.");
+            return;
+        }
+
+        List<String> path = dijkstraPath(start, end);
+        if (path != null) {
+            resultTextArea.setText("Shortest Path:\n" + String.join(" → ", path));
+        } else {
+            resultTextArea.setText("No path found between " + start + " and " + end);
+        }
+    }
 
     private List<String> bfsPath(String startName, String endName) {
         CustomNode start = graph.getNode(startName);
@@ -140,5 +159,113 @@ public class HelloController {
         }
 
         return null; // No path found
+    }
+
+    private List<String> dijkstraPath(String startName, String endName) {
+        CustomNode start = graph.getNode(startName);
+        CustomNode end = graph.getNode(endName);
+
+        Map<CustomNode, CustomNode> cameFrom = new HashMap<>();
+        Map<CustomNode, Integer> distance = new HashMap<>();
+        PriorityQueue<CustomNode> queue = new PriorityQueue<>(Comparator.comparingInt(distance::get));
+
+        for (CustomNode node : graph.getAllNodes()) {
+            distance.put(node, Integer.MAX_VALUE);
+        }
+
+        distance.put(start, 0);
+        queue.add(start);
+
+        while (!queue.isEmpty()) {
+            CustomNode current = queue.poll();
+
+            if (current.equals(end)) {
+                LinkedList<String> path = new LinkedList<>();
+                while (current != null) {
+                    path.addFirst(current.getName());
+                    current = cameFrom.get(current);
+                }
+                return path;
+            }
+
+            for (CustomLink link : graph.getAdjacencyList().getOrDefault(current, List.of())) {
+                CustomNode neighbor = link.getTo();
+                int newDist = distance.get(current) + 1; // unweighted assumption
+
+                if (newDist < distance.get(neighbor)) {
+                    distance.put(neighbor, newDist);
+                    cameFrom.put(neighbor, current);
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        return null;
+    }
+    private List<List<String>> bfsPaths(String startName, String endName) {
+        CustomNode start = graph.getNode(startName);
+        CustomNode end = graph.getNode(endName);
+
+        List<List<String>> allPaths = new ArrayList<>();
+        Queue<List<CustomNode>> queue = new LinkedList<>();
+        Set<CustomNode> visited = new HashSet<>();
+
+        // Initialize queue with starting node path
+        List<CustomNode> initialPath = new ArrayList<>();
+        initialPath.add(start);
+        queue.add(initialPath);
+
+        boolean foundShortest = false;
+
+        while (!queue.isEmpty()) {
+            List<CustomNode> path = queue.poll();
+            CustomNode current = path.get(path.size() - 1);
+
+            if (current.equals(end)) {
+                // Convert path to names
+                List<String> resultPath = path.stream()
+                        .map(CustomNode::getName)
+                        .collect(Collectors.toList());
+                allPaths.add(resultPath);
+                foundShortest = true; // Found shortest path
+            }
+
+            // Stop expanding paths if we’ve found the shortest length paths
+            if (foundShortest) continue;
+
+            for (CustomLink link : graph.getAdjacencyList().getOrDefault(current, List.of())) {
+                CustomNode neighbor = link.getTo();
+                if (!path.contains(neighbor)) { // avoid cycles
+                    List<CustomNode> newPath = new ArrayList<>(path);
+                    newPath.add(neighbor);
+                    queue.add(newPath);
+                }
+            }
+        }
+
+        return allPaths;
+    }
+
+    @FXML
+    private void handleFindAllPaths() {
+        String start = startComboBox.getValue();
+        String end = endComboBox.getValue();
+
+        if (start == null || end == null || start.equals(end)) {
+            resultTextArea.setText("Please select two different stations.");
+            return;
+        }
+
+        List<List<String>> paths = bfsPaths(start, end);
+        if (!paths.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Found ").append(paths.size()).append(" shortest paths:\n\n");
+            for (List<String> path : paths) {
+                sb.append(String.join(" → ", path)).append("\n");
+            }
+            resultTextArea.setText(sb.toString());
+        } else {
+            resultTextArea.setText("No path found between " + start + " and " + end);
+        }
     }
 }

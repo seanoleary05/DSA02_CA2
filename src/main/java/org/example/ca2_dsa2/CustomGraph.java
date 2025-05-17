@@ -29,4 +29,7 @@ public class CustomGraph {
     public CustomNode getNode(String name) {
         return nodes.get(name);
     }
+    public Set<CustomNode> getAllNodes() {
+        return adjacencyList.keySet();
+    }
 }

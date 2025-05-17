@@ -6,6 +6,7 @@ public class CustomLink {
     private String line;
     private String color;
 
+
     public CustomLink(CustomNode from, CustomNode to, String line, String color) {
         this.from = from;
         this.to = to;
@@ -17,6 +18,7 @@ public class CustomLink {
     public CustomNode getTo() { return to; }
     public String getLine() { return line; }
     public String getColor() { return color; }
+
 
     @Override
     public String toString() {
