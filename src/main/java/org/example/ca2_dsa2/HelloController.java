@@ -21,9 +21,12 @@ public class HelloController {
     private ImageView mapView;
     @FXML
     private StackPane stackPane;
-    @FXML private ComboBox<String> startComboBox;
-    @FXML private ComboBox<String> endComboBox;
-    @FXML private TextArea resultTextArea;
+    @FXML
+    private ComboBox<String> startComboBox;
+    @FXML
+    private ComboBox<String> endComboBox;
+    @FXML
+    private TextArea resultTextArea;
 
 
     @FXML
@@ -70,6 +73,7 @@ public class HelloController {
             e.printStackTrace();
         }
     }
+
     private void displayGraph() {
         StringBuilder builder = new StringBuilder("Graph:\n");
         for (CustomNode node : graph.getNodes()) {
@@ -82,6 +86,7 @@ public class HelloController {
         }
         csvTextArea.setText(builder.toString());
     }
+
     private void displayNodes() {
         StringBuilder builder = new StringBuilder("Nodes:\n");
         for (CustomNode node : nodeMap.values()) {
@@ -89,6 +94,7 @@ public class HelloController {
         }
         csvTextArea.setText(builder.toString());
     }
+
     @FXML
     private void handleFindPath() {
         String start = startComboBox.getValue();
@@ -106,6 +112,7 @@ public class HelloController {
             resultTextArea.setText("No path found between " + start + " and " + end);
         }
     }
+
     @FXML
     private void handleDijkstraPath() {
         String start = startComboBox.getValue();
@@ -202,52 +209,50 @@ public class HelloController {
 
         return null;
     }
-    private List<List<String>> bfsPaths(String startName, String endName) {
+
+    private List<List<String>> dfsPaths(String startName, String endName) {
         CustomNode start = graph.getNode(startName);
         CustomNode end = graph.getNode(endName);
 
         List<List<String>> allPaths = new ArrayList<>();
-        Queue<List<CustomNode>> queue = new LinkedList<>();
         Set<CustomNode> visited = new HashSet<>();
+        LinkedList<CustomNode> currentPath = new LinkedList<>();
 
-        // Initialize queue with starting node path
-        List<CustomNode> initialPath = new ArrayList<>();
-        initialPath.add(start);
-        queue.add(initialPath);
+        dfsHelper(start, end, visited, currentPath, allPaths);
+        return allPaths;
+    }
 
-        boolean foundShortest = false;
+    private void dfsHelper(CustomNode current, CustomNode end,
+                           Set<CustomNode> visited,
+                           LinkedList<CustomNode> currentPath,
+                           List<List<String>> allPaths) {
 
-        while (!queue.isEmpty()) {
-            List<CustomNode> path = queue.poll();
-            CustomNode current = path.get(path.size() - 1);
+        visited.add(current);
+        currentPath.add(current);
 
-            if (current.equals(end)) {
-                // Convert path to names
-                List<String> resultPath = path.stream()
-                        .map(CustomNode::getName)
-                        .collect(Collectors.toList());
-                allPaths.add(resultPath);
-                foundShortest = true; // Found shortest path
-            }
-
-            // Stop expanding paths if we’ve found the shortest length paths
-            if (foundShortest) continue;
-
+        if (current.equals(end)) {
+            // Found a path
+            List<String> pathNames = currentPath.stream()
+                    .map(CustomNode::getName)
+                    .collect(Collectors.toList());
+            allPaths.add(pathNames);
+        } else {
             for (CustomLink link : graph.getAdjacencyList().getOrDefault(current, List.of())) {
                 CustomNode neighbor = link.getTo();
-                if (!path.contains(neighbor)) { // avoid cycles
-                    List<CustomNode> newPath = new ArrayList<>(path);
-                    newPath.add(neighbor);
-                    queue.add(newPath);
+                if (!visited.contains(neighbor)) {
+                    dfsHelper(neighbor, end, visited, currentPath, allPaths);
                 }
             }
         }
 
-        return allPaths;
+        // Backtrack
+        currentPath.removeLast();
+        visited.remove(current);
     }
 
+
     @FXML
-    private void handleFindAllPaths() {
+    private void handleFindAllPathsDFS() {
         String start = startComboBox.getValue();
         String end = endComboBox.getValue();
 
@@ -256,12 +261,12 @@ public class HelloController {
             return;
         }
 
-        List<List<String>> paths = bfsPaths(start, end);
+        List<List<String>> paths = dfsPaths(start, end);
         if (!paths.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Found ").append(paths.size()).append(" shortest paths:\n\n");
+            sb.append("DFS found ").append(paths.size()).append(" path(s):\n\n");
             for (List<String> path : paths) {
-                sb.append(String.join(" → ", path)).append("\n");
+                sb.append(String.join(" -> ", path)).append("\n");
             }
             resultTextArea.setText(sb.toString());
         } else {

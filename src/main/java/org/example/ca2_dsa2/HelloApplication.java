@@ -33,7 +33,8 @@ public class HelloApplication extends Application {
         StackPane stackPane = new StackPane(textArea);
         mainStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 1000);
+        Scene scene = new Scene(fxmlLoader.load(), 1500, 1000);
+
         mainStage.setTitle("Vienna U-Bahn Route Finder");
         mainStage.setScene(homePage);
         mainStage.setScene(scene);

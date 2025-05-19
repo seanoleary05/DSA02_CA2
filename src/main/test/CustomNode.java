@@ -1,8 +1,3 @@
-package org.example.ca2_dsa2;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class CustomNode {
     public String name;
 
